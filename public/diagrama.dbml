@@ -1,0 +1,43 @@
+Table users{
+    id intiger [pk, increment]
+    name varchar(255)
+    email varchar(255)
+    password varchar(255)
+}
+
+Table categorias{
+    id intiger [pk, increment]
+    nombre varchar(255)
+    tipo enum('ingreso', 'gasto')
+}
+
+Table movimientos{
+    id intiger [pk, increment]
+    user_id intiger [ref: > users.id]
+    categoria_id intiger [ref: > categorias.id]
+    cuenta_id intiger [ref: > cuentas.id]
+    tipo enum('ingreso', 'gasto')
+    monto decimal(10,2)
+    descripcion text
+    foto varchar(255)
+    fecha datetime
+}
+
+Table presupuestos{
+    id intiger [pk, increment]
+    user_id intiger [ref: > users.id]
+    categoria_id intiger [ref: > categorias.id]
+    monto_asignado decimal(10,2)
+    monto_gastado decimal(10,2)
+    mes varchar(255)
+    anio intiger
+}
+
+Table cuentas{
+    id intiger [pk, increment]
+    user_id intiger [ref: > users.id]
+    nombre varchar(255)
+    tipo varchar(255)
+    saldo_inicial decimal(10,2)
+    saldo_actual decimal(10,2)
+}

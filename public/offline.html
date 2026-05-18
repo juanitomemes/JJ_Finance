@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#09090b">
+    <title>Sin Conexión — JJ Finance</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        :root {
+            --bg:            #09090b;
+            --surface:       #18181b;
+            --surface-2:     #27272a;
+            --border:        rgba(63, 63, 70, 0.5);
+            --primary:       #f59e0b;
+            --primary-dim:   rgba(245, 158, 11, 0.12);
+            --primary-glow:  rgba(245, 158, 11, 0.35);
+            --text:          #f4f4f5;
+            --text-muted:    #a1a1aa;
+            --text-subtle:   #52525b;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text);
+            font-family: 'Outfit', sans-serif;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 1.5rem;
+            overflow: hidden;
+            position: relative;
+        }
+
+        /* Fondo decorativo */
+        body::before {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background:
+                radial-gradient(ellipse 60% 50% at 50% 0%, rgba(245, 158, 11, 0.07) 0%, transparent 60%),
+                radial-gradient(ellipse 40% 40% at 80% 80%, rgba(245, 158, 11, 0.04) 0%, transparent 50%);
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* Grid sutil de fondo */
+        body::after {
+            content: '';
+            position: fixed;
+            inset: 0;
+            background-image: 
+                linear-gradient(rgba(63,63,70,0.15) 1px, transparent 1px),
+                linear-gradient(90deg, rgba(63,63,70,0.15) 1px, transparent 1px);
+            background-size: 40px 40px;
+            pointer-events: none;
+            z-index: 0;
+        }
+
+        /* ── Card Principal ───────────────────────────────────────── */
+        .card {
+            position: relative;
+            z-index: 1;
+            width: 100%;
+            max-width: 440px;
+            background: rgba(24, 24, 27, 0.85);
+            border: 1px solid var(--border);
+            border-radius: 24px;
+            padding: 2.5rem 2rem;
+            text-align: center;
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            box-shadow:
+                0 0 0 1px rgba(245,158,11,0.05),
+                0 25px 50px rgba(0, 0, 0, 0.6),
+                inset 0 1px 0 rgba(255,255,255,0.04);
+            animation: card-in 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+        }
+
+        @keyframes card-in {
+            from { opacity: 0; transform: translateY(28px) scale(0.97); }
+            to   { opacity: 1; transform: translateY(0)   scale(1); }
+        }
+
+        /* ── Ícono de Sin Conexión ────────────────────────────────── */
+        .icon-ring {
+            width: 88px;
+            height: 88px;
+            margin: 0 auto 1.75rem;
+            border-radius: 50%;
+            background: var(--primary-dim);
+            border: 2px solid rgba(245,158,11,0.3);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            animation: ring-pulse 3s ease-in-out infinite;
+        }
+
+        @keyframes ring-pulse {
+            0%, 100% { box-shadow: 0 0 0 0 var(--primary-glow); }
+            50%       { box-shadow: 0 0 0 14px rgba(245,158,11,0); }
+        }
+
+        .icon-ring svg {
+            width: 42px;
+            height: 42px;
+            color: var(--primary);
+            animation: icon-wobble 3s ease-in-out infinite;
+        }
+
+        @keyframes icon-wobble {
+            0%, 100% { transform: rotate(0deg); }
+            25%       { transform: rotate(-6deg); }
+            75%       { transform: rotate(6deg); }
+        }
+
+        /* ── Tipografía ───────────────────────────────────────────── */
+        .badge {
+            display: inline-block;
+            background: var(--primary-dim);
+            color: var(--primary);
+            border: 1px solid rgba(245,158,11,0.2);
+            border-radius: 100px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 0.1em;
+            text-transform: uppercase;
+            padding: 0.25rem 0.85rem;
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 0.75rem;
+            background: linear-gradient(160deg, #ffffff 0%, #a1a1aa 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        p {
+            font-size: 0.92rem;
+            color: var(--text-muted);
+            line-height: 1.65;
+            margin-bottom: 2rem;
+        }
+
+        /* ── Divisor ──────────────────────────────────────────────── */
+        .divider {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            margin-bottom: 1.5rem;
+        }
+        .divider::before, .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: var(--border);
+        }
+        .divider-text {
+            font-size: 0.72rem;
+            color: var(--text-subtle);
+            letter-spacing: 0.05em;
+            white-space: nowrap;
+        }
+
+        /* ── Indicador de Estado ──────────────────────────────────── */
+        .status-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            margin-bottom: 2rem;
+            font-size: 0.82rem;
+            color: var(--text-muted);
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #ef4444;
+            animation: blink 1.5s ease-in-out infinite;
+        }
+
+        @keyframes blink {
+            0%, 100% { opacity: 1; }
+            50%       { opacity: 0.3; }
+        }
+
+        /* ── Botón Principal ──────────────────────────────────────── */
+        .btn-primary {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.6rem;
+            width: 100%;
+            padding: 0.9rem 1.5rem;
+            background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%);
+            color: #000000;
+            font-family: inherit;
+            font-size: 0.95rem;
+            font-weight: 600;
+            border: none;
+            border-radius: 12px;
+            cursor: pointer;
+            transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 16px var(--primary-glow);
+            text-decoration: none;
+            margin-bottom: 0.75rem;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 24px rgba(245,158,11,0.5);
+        }
+
+        .btn-primary:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px var(--primary-glow);
+        }
+
+        .btn-primary svg {
+            width: 18px;
+            height: 18px;
+            flex-shrink: 0;
+        }
+
+        /* ── Nota de pie ──────────────────────────────────────────── */
+        .footer-note {
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--text-subtle);
+        }
+
+        .footer-note span {
+            color: var(--primary);
+            font-weight: 500;
+        }
+    </style>
+</head>
+<body>
+
+<div class="card">
+
+    <div class="icon-ring">
+        <!-- Ícono SVG: WiFi Off (Lucide) -->
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <line x1="1" y1="1" x2="23" y2="23"></line>
+            <path d="M16.72 11.06A10.94 10.94 0 0 1 19 12.5"></path>
+            <path d="M5 12.5a10.94 10.94 0 0 1 5.17-2.39"></path>
+            <path d="M10.71 5.05A16 16 0 0 1 22.56 9"></path>
+            <path d="M1.42 9a15.91 15.91 0 0 1 4.7-2.88"></path>
+            <path d="M8.53 16.11a6 6 0 0 1 6.95 0"></path>
+            <line x1="12" y1="20" x2="12.01" y2="20"></line>
+        </svg>
+    </div>
+
+    <span class="badge">Modo Sin Conexión</span>
+
+    <h1>Sin acceso a Internet</h1>
+
+    <p>
+        No se pudo establecer conexión. La plataforma necesita estar en línea para 
+        garantizar que tus <strong style="color:var(--text);">saldos, movimientos y metas</strong> 
+        estén siempre sincronizados y actualizados.
+    </p>
+
+    <div class="status-row">
+        <span class="status-dot"></span>
+        <span id="status-text">Verificando conectividad…</span>
+    </div>
+
+    <button class="btn-primary" onclick="retryConnection()">
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none"
+             stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+            <polyline points="23 4 23 10 17 10"></polyline>
+            <path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"></path>
+        </svg>
+        Reintentar conexión
+    </button>
+
+    <div class="divider">
+        <span class="divider-text">o espera a que vuelva la señal</span>
+    </div>
+
+    <p style="font-size:0.82rem;color:var(--text-subtle);margin-bottom:0;">
+        Esta página se mostrará automáticamente hasta que se restaure la conexión.
+    </p>
+
+    <div class="footer-note">
+        <span>JJ Finance</span> — Tu dinero, bajo control.
+    </div>
+</div>
+
+<script>
+    const statusText = document.getElementById('status-text');
+    const statusDot  = document.querySelector('.status-dot');
+
+    function retryConnection() {
+        statusText.textContent = 'Intentando reconectar…';
+        statusDot.style.background = '#f59e0b';
+
+        // Recargar la página para volver a la ruta original
+        setTimeout(() => {
+            window.location.href = '/admin';
+        }, 600);
+    }
+
+    // Detectar automáticamente cuando vuelva la conexión
+    window.addEventListener('online', () => {
+        statusText.textContent = '¡Conexión restaurada! Redirigiendo…';
+        statusDot.style.background = '#22c55e';
+        statusDot.style.animation  = 'none';
+        setTimeout(() => { window.location.href = '/admin'; }, 1000);
+    });
+
+    window.addEventListener('offline', () => {
+        statusText.textContent = 'Sin conexión a Internet';
+        statusDot.style.background = '#ef4444';
+    });
+
+    // Estado inicial
+    if (navigator.onLine) {
+        statusText.textContent = 'Conexión detectada, redirigiendo…';
+        statusDot.style.background = '#22c55e';
+        setTimeout(() => { window.location.href = '/admin'; }, 1500);
+    } else {
+        statusText.textContent = 'Sin conexión a Internet';
+    }
+</script>
+
+</body>
+</html>

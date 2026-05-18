@@ -1,0 +1,62 @@
+{
+    "name": "JJ Finance",
+    "short_name": "JJ Finance",
+    "description": "Gestión financiera personal inteligente: cuentas, presupuestos, metas de ahorro y reportes premium.",
+    "start_url": "/admin",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#09090b",
+    "theme_color": "#09090b",
+    "orientation": "portrait-primary",
+    "categories": ["finance", "utilities", "productivity"],
+    "lang": "es",
+    "icons": [
+        {
+            "src": "/icons/icon-192x192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-512x512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/icons/icon-192x192-maskable.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "maskable"
+        },
+        {
+            "src": "/icons/icon-512x512-maskable.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "maskable"
+        }
+    ],
+    "shortcuts": [
+        {
+            "name": "Dashboard",
+            "short_name": "Dashboard",
+            "description": "Ver resumen financiero del mes",
+            "url": "/admin",
+            "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Nuevo Movimiento",
+            "short_name": "Nuevo Gasto",
+            "description": "Registrar un ingreso o gasto rápidamente",
+            "url": "/admin/movimientos/create",
+            "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+        },
+        {
+            "name": "Cuentas",
+            "short_name": "Cuentas",
+            "description": "Ver y gestionar mis cuentas",
+            "url": "/admin/cuentas",
+            "icons": [{ "src": "/icons/icon-192x192.png", "sizes": "192x192" }]
+        }
+    ]
+}
