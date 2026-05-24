@@ -32,17 +32,51 @@ class MovimientoResource extends Resource
 
                 Card::make('Llene los campos del formulario')
                 ->schema([
-                   Forms\Components\Hidden::make('user_id')
-                    ->default(auth()->id()),
+
+                Forms\Components\Select::make('tipo')
+                    ->label('Tipo de movimiento')
+                    ->required()
+                    ->options([
+                        'ingreso' => 'Ingreso',
+                        'gasto' => 'Gasto',
+                        'ahorro' => 'Ahorro a Meta',
+                    ])
+                    ->reactive()
+                    ->afterStateUpdated(function (callable $set, $state) {
+                        $set('categoria_id', null);
+                        
+                        if ($state === 'ahorro') {
+                            $categoria = \App\Models\Categoria::firstOrCreate(
+                                ['nombre' => 'Ahorro', 'user_id' => auth()->id()],
+                                ['tipo' => 'gasto']
+                            );
+                            $set('categoria_id', $categoria->id);
+                        }
+                    }),
                 Forms\Components\Select::make('categoria_id')
+                    ->label('Categoría')
                     ->required()
                     ->relationship(
                         name: 'categoria',
                         titleAttribute: 'nombre',
-                        modifyQueryUsing: fn (Builder $query) => $query
-                            ->whereNull('user_id')
-                            ->orWhere('user_id', auth()->id())
-                    ),
+                        modifyQueryUsing: function (Builder $query, callable $get) {
+                            $tipoMovimiento = $get('tipo');
+                            
+                            if (!$tipoMovimiento) {
+                                return $query->whereRaw('1 = 0');
+                            }
+
+                            $tipoCategoria = $tipoMovimiento === 'ahorro' ? 'gasto' : $tipoMovimiento;
+
+                            return $query
+                                ->where('tipo', $tipoCategoria)
+                                ->where(function ($q) {
+                                    $q->whereNull('user_id')
+                                      ->orWhere('user_id', auth()->id());
+                                });
+                        }
+                    )
+                    ->disabled(fn (callable $get) => empty($get('tipo')) || $get('tipo') === 'ahorro'),
                 Forms\Components\Select::make('cuenta_id')
                     ->label('Cuenta / Monedero')
                     ->required()
@@ -51,14 +85,6 @@ class MovimientoResource extends Resource
                         titleAttribute: 'nombre',
                         modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id())
                     ),
-                Forms\Components\Select::make('tipo')
-                    ->required()
-                    ->options([
-                        'ingreso' => 'Ingreso',
-                        'gasto' => 'Gasto',
-                        'ahorro' => 'Ahorro a Meta',
-                    ])
-                    ->reactive(),
                 Forms\Components\Select::make('meta_id')
                     ->label('Meta de Ahorro Destino')
                     ->relationship('metaAhorro', 'nombre', fn (Builder $query) => $query->where('user_id', auth()->id()))
@@ -100,7 +126,8 @@ class MovimientoResource extends Resource
                     ->disk('public')
                     ->directory('movimientos'),
                 Forms\Components\DatePicker::make('fecha')
-                    ->required(),
+                    ->required()
+                    ->default(now()),
 
                 ])->columns(2)
 

@@ -32,19 +32,8 @@ class Cuenta extends Model
 
         static::updating(function ($cuenta) {
             if ($cuenta->isDirty('saldo_inicial')) {
-                $ingresos = Movimiento::where('cuenta_id', $cuenta->id)
-                    ->where('tipo', 'ingreso')
-                    ->sum('monto');
-
-                $gastos = Movimiento::where('cuenta_id', $cuenta->id)
-                    ->where('tipo', 'gasto')
-                    ->sum('monto');
-
-                $ahorros = Movimiento::where('cuenta_id', $cuenta->id)
-                    ->where('tipo', 'ahorro')
-                    ->sum('monto');
-
-                $cuenta->saldo_actual = $cuenta->saldo_inicial + $ingresos - $gastos - $ahorros;
+                $delta = $cuenta->saldo_inicial - ($cuenta->getOriginal('saldo_inicial') ?? 0);
+                $cuenta->saldo_actual += $delta;
             }
         });
     }

@@ -44,8 +44,7 @@ class CategoriaResource extends Resource
                             ])
                             ->label('Tipo de movimiento')
                             ->required(),
-                        Forms\Components\Hidden::make('user_id')
-                            ->default(auth()->id()),
+
                     ])
                 ])
 

@@ -32,8 +32,7 @@ class PresupuestoResource extends Resource
 
              Card::make('Llene los campos del formulario')
                 ->schema([
-                Forms\Components\Hidden::make('user_id')
-                    ->default(auth()->id()),
+
                 Forms\Components\Select::make('categoria_id')
                     ->required()
                     ->label('Categorias')

@@ -28,8 +28,7 @@ class MetaAhorroResource extends Resource
             ->schema([
                 Card::make('Llene los campos del formulario')
                     ->schema([
-                        Forms\Components\Hidden::make('user_id')
-                            ->default(auth()->id()),
+
                         Forms\Components\TextInput::make('nombre')
                             ->label('Nombre de la Meta')
                             ->required()

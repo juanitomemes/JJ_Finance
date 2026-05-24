@@ -26,8 +26,7 @@ class CuentaResource extends Resource
             ->schema([
                 Forms\Components\Card::make('Información de la Cuenta')
                     ->schema([
-                        Forms\Components\Hidden::make('user_id')
-                            ->default(auth()->id()),
+
                         Forms\Components\TextInput::make('nombre')
                             ->required()
                             ->maxLength(255)
