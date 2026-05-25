@@ -1,5 +1,5 @@
-# Imagen base de PHP 8.2 con Apache
-FROM php:8.2-apache
+# Imagen base de PHP 8.4 con Apache (debe coincidir con la versión local que generó composer.lock)
+FROM php:8.4-apache
 
 # Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
