@@ -41,7 +41,10 @@ class Reportes extends Page
                     Select::make('anio')
                         ->label('Año')
                         ->options(function () {
-                            $anios = Movimiento::selectRaw('YEAR(fecha) as anio')
+                            $driver = \Illuminate\Support\Facades\DB::connection()->getDriverName();
+                            $yearRaw = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM fecha)' : ($driver === 'sqlite' ? "strftime('%Y', fecha)" : 'YEAR(fecha)');
+                            
+                            $anios = Movimiento::selectRaw("$yearRaw as anio")
                                 ->where('user_id', auth()->id())
                                 ->distinct()
                                 ->pluck('anio', 'anio')

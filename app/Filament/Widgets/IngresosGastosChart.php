@@ -27,16 +27,20 @@ class IngresosGastosChart extends ChartWidget
         // --- OPTIMIZACIÓN: 1 sola consulta SQL agrupada en lugar de 12 consultas individuales ---
         $fechaInicio = Carbon::now()->subMonths(5)->startOfMonth();
 
+        $driver = DB::connection()->getDriverName();
+        $yearRaw = $driver === 'pgsql' ? 'EXTRACT(YEAR FROM fecha)' : ($driver === 'sqlite' ? "strftime('%Y', fecha)" : 'YEAR(fecha)');
+        $monthRaw = $driver === 'pgsql' ? 'EXTRACT(MONTH FROM fecha)' : ($driver === 'sqlite' ? "strftime('%m', fecha)" : 'MONTH(fecha)');
+
         $rawData = Movimiento::select(
-                DB::raw('YEAR(fecha) as anio'),
-                DB::raw('MONTH(fecha) as mes_num'),
+                DB::raw("$yearRaw as anio"),
+                DB::raw("$monthRaw as mes_num"),
                 'tipo',
                 DB::raw('SUM(monto) as total')
             )
             ->where('user_id', auth()->id())
             ->where('fecha', '>=', $fechaInicio)
             ->whereIn('tipo', ['ingreso', 'gasto'])
-            ->groupBy(DB::raw('YEAR(fecha)'), DB::raw('MONTH(fecha)'), 'tipo')
+            ->groupBy(DB::raw($yearRaw), DB::raw($monthRaw), 'tipo')
             ->get()
             ->groupBy(fn ($row) => "{$row->anio}-{$row->mes_num}");
 
