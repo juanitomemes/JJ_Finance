@@ -63,8 +63,10 @@ RUN echo '<Directory /var/www/html/public>\n\
 WORKDIR /var/www/html
 COPY . .
 
+# Mostrar extensiones PHP disponibles (debug)
+RUN echo "=== PHP EXTENSIONS ===" && php -m && echo "=== END EXTENSIONS ==="
+
 # Instalar dependencias PHP
-# -vvv: verbose para ver el error real si falla
 # --no-scripts: evita que artisan corra sin .env
 # COMPOSER_MEMORY_LIMIT=-1: sin límite de memoria
 RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
@@ -72,7 +74,7 @@ RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     --optimize-autoloader \
     --no-scripts \
     --no-interaction \
-    -vvv
+    2>&1 || (echo "======= COMPOSER ERROR ABOVE =======" && exit 1)
 
 # Instalar dependencias Node y compilar assets
 RUN npm ci && npm run build
