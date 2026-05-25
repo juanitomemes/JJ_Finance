@@ -9,9 +9,19 @@ use Illuminate\Notifications\Notifiable;
 use App\Models\Movimiento;
 use App\Models\Presupuesto;
 
-class User extends Authenticatable
+use Filament\Models\Contracts\FilamentUser;
+use Filament\Panel;
+
+class User extends Authenticatable implements FilamentUser
 {
     use HasFactory, Notifiable;
+
+    public function canAccessPanel(Panel $panel): bool
+    {
+        // En producción, puedes limitar el acceso por email o rol.
+        // Aquí permitiremos el acceso al panel a todos los usuarios registrados.
+        return true;
+    }
 
     protected $fillable = [
         'name',
