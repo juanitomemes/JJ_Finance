@@ -1,6 +1,9 @@
 #!/bin/bash
 set -e
 
+echo "-----> Registrando paquetes de Laravel (post-autoload-dump)..."
+php artisan package:discover --ansi
+
 echo "-----> Cacheando configuración de Laravel..."
 php artisan config:cache
 php artisan route:cache

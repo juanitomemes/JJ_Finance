@@ -35,7 +35,8 @@ WORKDIR /var/www/html
 COPY . .
 
 # Instalar dependencias PHP (sin dev)
-RUN composer install --no-dev --optimize-autoloader
+# --no-scripts evita que artisan corra durante el build (necesita .env que no existe aún)
+RUN composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
 
 # Instalar dependencias Node y compilar assets
 RUN npm install && npm run build
