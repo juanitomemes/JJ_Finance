@@ -1,7 +1,7 @@
 # Imagen base de PHP 8.2 con Apache
 FROM php:8.2-apache
 
-# Instalar dependencias del sistema + extensiones de PHP necesarias para Laravel/Filament/dompdf
+# Instalar dependencias del sistema
 RUN apt-get update && apt-get install -y \
     git \
     curl \
@@ -15,7 +15,12 @@ RUN apt-get update && apt-get install -y \
     libjpeg62-turbo-dev \
     zip \
     unzip \
-    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
+# Instalar extensiones PHP
+# NOTA: dom, xml, xmlreader, xmlwriter ya vienen en la imagen base - NO reinstalar
+RUN docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install \
         pdo \
         pdo_pgsql \
@@ -27,13 +32,9 @@ RUN apt-get update && apt-get install -y \
         gd \
         zip \
         intl \
-        dom \
-        xml \
-        opcache \
-    && apt-get clean \
-    && rm -rf /var/lib/apt/lists/*
+        opcache
 
-# Instalar Node.js 20 LTS (la versión de Debian puede ser demasiado vieja para Vite)
+# Instalar Node.js 20 LTS
 RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
     && apt-get install -y nodejs \
     && apt-get clean \
@@ -48,10 +49,10 @@ ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf \
     && sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
 
-# Habilitar mod_rewrite para que funcionen las rutas de Laravel
+# Habilitar mod_rewrite para las rutas de Laravel
 RUN a2enmod rewrite
 
-# Configurar AllowOverride para .htaccess (necesario para Laravel)
+# Configurar AllowOverride para .htaccess
 RUN echo '<Directory /var/www/html/public>\n\
     Options Indexes FollowSymLinks\n\
     AllowOverride All\n\
@@ -63,11 +64,17 @@ WORKDIR /var/www/html
 COPY . .
 
 # Instalar dependencias PHP
-# --no-scripts: evita que artisan corra durante el build (sin .env disponible aún)
-# COMPOSER_MEMORY_LIMIT=-1: evita errores de memoria con paquetes grandes como Filament
-RUN COMPOSER_MEMORY_LIMIT=-1 composer install --no-dev --optimize-autoloader --no-scripts --no-interaction
+# -vvv: verbose para ver el error real si falla
+# --no-scripts: evita que artisan corra sin .env
+# COMPOSER_MEMORY_LIMIT=-1: sin límite de memoria
+RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
+    --no-dev \
+    --optimize-autoloader \
+    --no-scripts \
+    --no-interaction \
+    -vvv
 
-# Instalar dependencias Node y compilar assets con Vite
+# Instalar dependencias Node y compilar assets
 RUN npm ci && npm run build
 
 # Permisos correctos para Laravel
