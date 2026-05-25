@@ -77,7 +77,7 @@ RUN COMPOSER_MEMORY_LIMIT=-1 composer install \
     2>&1 || (echo "======= COMPOSER ERROR ABOVE =======" && exit 1)
 
 # Instalar dependencias Node y compilar assets
-RUN npm ci && npm run build
+RUN npm install && npm run build
 
 # Permisos correctos para Laravel
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache \
