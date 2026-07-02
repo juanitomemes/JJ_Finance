@@ -11,6 +11,28 @@ use Filament\Notifications\Notification;
 
 class MovimientoObserver
 {
+    public function creating(Movimiento $movimiento): void
+    {
+        $this->asegurarCategoria($movimiento);
+    }
+
+    public function updating(Movimiento $movimiento): void
+    {
+        $this->asegurarCategoria($movimiento);
+    }
+
+    private function asegurarCategoria(Movimiento $movimiento): void
+    {
+        if (in_array($movimiento->tipo, ['ahorro', 'transferencia']) && empty($movimiento->categoria_id)) {
+            $nombre = ucfirst($movimiento->tipo);
+            $categoria = \App\Models\Categoria::firstOrCreate(
+                ['nombre' => $nombre, 'user_id' => $movimiento->user_id ?? auth()->id()],
+                ['tipo' => 'gasto']
+            );
+            $movimiento->categoria_id = $categoria->id;
+        }
+    }
+
     public function created(Movimiento $movimiento): void
     {
         $this->aplicarEfecto($movimiento, 1, false);
