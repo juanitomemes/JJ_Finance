@@ -52,11 +52,18 @@ class MovimientoResource extends Resource
                                 ['tipo' => 'gasto']
                             );
                             $set('categoria_id', $categoria->id);
+                        } elseif ($state === 'transferencia') {
+                            $categoria = \App\Models\Categoria::firstOrCreate(
+                                ['nombre' => 'Transferencia', 'user_id' => auth()->id()],
+                                ['tipo' => 'gasto']
+                            );
+                            $set('categoria_id', $categoria->id);
                         }
                     }),
                 Forms\Components\Select::make('categoria_id')
                     ->label('Categoría')
-                    ->required()
+                    ->required(fn (callable $get) => !in_array($get('tipo'), ['ahorro', 'transferencia']))
+                    ->dehydrated()
                     ->relationship(
                         name: 'categoria',
                         titleAttribute: 'nombre',
