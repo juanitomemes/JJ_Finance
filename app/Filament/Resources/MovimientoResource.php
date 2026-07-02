@@ -120,11 +120,11 @@ class MovimientoResource extends Resource
                     ->label('Descripción')
                     ->required()
                     ->columnSpanFull(),
-                Forms\Components\FileUpload::make('foto')
+             //   Forms\Components\FileUpload::make('foto')
                    // ->label('Foto')
-                    ->image()
-                    ->disk('public')
-                    ->directory('movimientos'),
+                    //->image()
+                   // ->disk('public')
+                    //->directory('movimientos'),
                 Forms\Components\DatePicker::make('fecha')
                     ->required()
                     ->default(now()),
@@ -175,10 +175,10 @@ class MovimientoResource extends Resource
                 Tables\Columns\TextColumn::make('monto')
                     ->money('MXN')
                     ->sortable(),
-                Tables\Columns\ImageColumn::make('foto')
-                    ->searchable()
-                    ->width(100)
-                    ->height(100),
+               // Tables\Columns\ImageColumn::make('foto')
+                 //   ->searchable()
+                   // ->width(100)
+                    //->height(100),
                 Tables\Columns\TextColumn::make('fecha')
                     ->date()
                     ->sortable(),
