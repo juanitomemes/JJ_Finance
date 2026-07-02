@@ -51,6 +51,7 @@ class MovimientoObserver
         $monto = $usarOriginales ? ($movimiento->getOriginal('monto') ?? 0) : $movimiento->monto;
         $tipo = $usarOriginales ? ($movimiento->getOriginal('tipo') ?? '') : $movimiento->tipo;
         $cuenta_id = $usarOriginales ? $movimiento->getOriginal('cuenta_id') : $movimiento->cuenta_id;
+        $cuenta_destino_id = $usarOriginales ? $movimiento->getOriginal('cuenta_destino_id') : $movimiento->cuenta_destino_id;
         $meta_id = $usarOriginales ? $movimiento->getOriginal('meta_id') : $movimiento->meta_id;
         $categoria_id = $usarOriginales ? $movimiento->getOriginal('categoria_id') : $movimiento->categoria_id;
         $fecha = $usarOriginales ? $movimiento->getOriginal('fecha') : $movimiento->fecha;
@@ -68,10 +69,19 @@ class MovimientoObserver
             if ($cuenta) {
                 if ($tipo === 'ingreso') {
                     $cuenta->saldo_actual += $valorEfectivo;
-                } elseif ($tipo === 'gasto' || $tipo === 'ahorro') {
+                } elseif (in_array($tipo, ['gasto', 'ahorro', 'transferencia'])) {
                     $cuenta->saldo_actual -= $valorEfectivo;
                 }
                 $cuenta->saveQuietly();
+            }
+        }
+
+        // 1.1 Afectar Cuenta Destino (Solo transferencias)
+        if ($tipo === 'transferencia' && $cuenta_destino_id) {
+            $cuentaDestino = Cuenta::find($cuenta_destino_id);
+            if ($cuentaDestino) {
+                $cuentaDestino->saldo_actual += $valorEfectivo;
+                $cuentaDestino->saveQuietly();
             }
         }
 

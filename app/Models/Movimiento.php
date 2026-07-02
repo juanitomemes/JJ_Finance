@@ -10,6 +10,7 @@ class Movimiento extends Model
         'user_id',
         'categoria_id',
         'cuenta_id',
+        'cuenta_destino_id',
         'meta_id',
         'tipo',
         'monto',
@@ -33,6 +34,11 @@ class Movimiento extends Model
     public function cuenta()
     {
         return $this->belongsTo(Cuenta::class);
+    }
+
+    public function cuentaDestino()
+    {
+        return $this->belongsTo(Cuenta::class, 'cuenta_destino_id');
     }
 
     public function metaAhorro()

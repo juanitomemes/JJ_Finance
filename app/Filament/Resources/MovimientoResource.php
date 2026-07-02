@@ -40,6 +40,7 @@ class MovimientoResource extends Resource
                         'ingreso' => 'Ingreso',
                         'gasto' => 'Gasto',
                         'ahorro' => 'Ahorro a Meta',
+                        'transferencia' => 'Transferencia',
                     ])
                     ->reactive()
                     ->afterStateUpdated(function (callable $set, $state) {
@@ -76,15 +77,31 @@ class MovimientoResource extends Resource
                                 });
                         }
                     )
-                    ->disabled(fn (callable $get) => empty($get('tipo')) || $get('tipo') === 'ahorro'),
+                    ->disabled(fn (callable $get) => empty($get('tipo')) || in_array($get('tipo'), ['ahorro', 'transferencia'])),
                 Forms\Components\Select::make('cuenta_id')
-                    ->label('Cuenta / Monedero')
+                    ->label(fn (callable $get) => $get('tipo') === 'transferencia' ? 'Cuenta Origen' : 'Cuenta / Monedero')
                     ->required()
                     ->relationship(
                         name: 'cuenta',
                         titleAttribute: 'nombre',
                         modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id())
                     ),
+                Forms\Components\Select::make('cuenta_destino_id')
+                    ->label('Cuenta Destino')
+                    ->relationship(
+                        name: 'cuentaDestino',
+                        titleAttribute: 'nombre',
+                        modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id())
+                    )
+                    ->visible(fn (callable $get) => $get('tipo') === 'transferencia')
+                    ->required(fn (callable $get) => $get('tipo') === 'transferencia')
+                    ->rules([
+                        fn (Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
+                            if ($get('tipo') === 'transferencia' && $value == $get('cuenta_id')) {
+                                $fail("La cuenta destino no puede ser la misma que la de origen.");
+                            }
+                        },
+                    ]),
                 Forms\Components\Select::make('meta_id')
                     ->label('Meta de Ahorro Destino')
                     ->relationship('metaAhorro', 'nombre', fn (Builder $query) => $query->where('user_id', auth()->id()))
@@ -97,7 +114,7 @@ class MovimientoResource extends Resource
                     ->rules([
                         fn (Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
                             $tipo = $get('tipo');
-                            if ($tipo !== 'ahorro' && $tipo !== 'gasto') return;
+                            if (!in_array($tipo, ['ahorro', 'gasto', 'transferencia'])) return;
 
                             $cuentaId = $get('cuenta_id');
                             if (!$cuentaId) return;
@@ -164,11 +181,13 @@ class MovimientoResource extends Resource
                         'ingreso' => 'success',
                         'gasto' => 'danger',
                         'ahorro' => 'info',
+                        'transferencia' => 'warning',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'ingreso' => 'heroicon-m-arrow-trending-up',
                         'gasto' => 'heroicon-m-arrow-trending-down',
                         'ahorro' => 'heroicon-m-banknotes',
+                        'transferencia' => 'heroicon-m-arrows-right-left',
                     })
                     ->searchable()
                     ->sortable(),
@@ -197,6 +216,7 @@ class MovimientoResource extends Resource
                     'ingreso' => 'Ingreso',
                     'gasto' => 'Gasto',
                     'ahorro' => 'Ahorro a Meta',
+                    'transferencia' => 'Transferencia',
                  ])
                  ->placeholder('Filtrar por tipo')
                  ->label('Tipo'),
