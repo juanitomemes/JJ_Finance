@@ -74,7 +74,7 @@ class MovimientoResource extends Resource
                                 return $query->whereRaw('1 = 0');
                             }
 
-                            $tipoCategoria = $tipoMovimiento === 'ahorro' ? 'gasto' : $tipoMovimiento;
+                            $tipoCategoria = in_array($tipoMovimiento, ['ahorro', 'transferencia']) ? 'gasto' : $tipoMovimiento;
 
                             return $query
                                 ->where('tipo', $tipoCategoria)
