@@ -121,7 +121,7 @@ class MovimientoResource extends Resource
                     ->required()
                     ->columnSpanFull(),
                 Forms\Components\FileUpload::make('foto')
-                    ->label('Foto')
+                   // ->label('Foto')
                     ->image()
                     ->disk('public')
                     ->directory('movimientos'),
