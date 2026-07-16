@@ -59,33 +59,12 @@ class CuentaResource extends Resource
     public static function table(Table $table): Table
     {
         return $table
+            ->contentGrid([
+                'md' => 2,
+                'xl' => 3,
+            ])
             ->columns([
-                Tables\Columns\TextColumn::make('nombre')
-                    ->searchable()
-                    ->sortable()
-                    ->weight('bold'),
-                Tables\Columns\TextColumn::make('tipo')
-                    ->badge()
-                    ->color(fn (string $state): string => match ($state) {
-                        'efectivo' => 'gray',
-                        'debito' => 'info',
-                        'credito' => 'danger',
-                        'ahorro' => 'success',
-                        default => 'primary',
-                    }),
-                Tables\Columns\TextColumn::make('saldo_inicial')
-                    ->money('MXN')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('saldo_actual')
-                    ->money('MXN')
-                    ->sortable()
-                    ->weight('bold')
-                    ->color(fn ($record) => $record->saldo_actual >= 0 ? 'success' : 'danger'),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->label('Última actualización')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\Layout\View::make('filament.tables.columns.cuenta-card'),
             ])
             ->filters([
                 //
