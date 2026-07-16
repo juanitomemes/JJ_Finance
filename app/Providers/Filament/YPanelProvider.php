@@ -105,6 +105,10 @@ class YPanelProvider extends PanelProvider
                         }
                     </script>
                 BLADE)
+            )
+            ->renderHook(
+                PanelsRenderHook::BODY_END,
+                fn (): string => view('filament.hooks.fab-movimiento')->render(),
             );
     }
 }
