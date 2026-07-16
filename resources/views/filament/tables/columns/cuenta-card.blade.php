@@ -21,10 +21,6 @@
 
 <div class="{{ $gradient }} !text-white rounded-2xl p-6 shadow-xl relative overflow-hidden flex flex-col justify-between min-h-[200px] w-full transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl border border-white/10 group">
     
-    <!-- Elementos decorativos de fondo más pequeños para que no tapen -->
-    <div class="absolute top-0 right-0 -mr-6 -mt-6 w-20 h-20 rounded-full bg-white opacity-5 pointer-events-none"></div>
-    <div class="absolute bottom-0 left-0 -ml-6 -mb-6 w-16 h-16 rounded-full bg-white opacity-5 pointer-events-none"></div>
-    
     <!-- Brillo sutil (Glassmorphism highlight) -->
     <div class="absolute inset-0 bg-gradient-to-br from-white/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 rounded-2xl pointer-events-none"></div>
 
@@ -63,10 +59,10 @@
             {{ $record->nombre }}
         </div>
         
-        <!-- Círculos decorativos estilo Master/Visa ligeramente más pequeños -->
-        <div class="flex items-center space-x-[-10px] opacity-80">
-            <div class="w-6 h-6 rounded-full bg-white opacity-40 mix-blend-overlay"></div>
-            <div class="w-6 h-6 rounded-full bg-white opacity-40 mix-blend-overlay"></div>
+        <!-- Círculos decorativos estilo Master/Visa -->
+        <div class="flex items-center space-x-[-12px]">
+            <div class="w-8 h-8 rounded-full bg-white/60 shadow-sm"></div>
+            <div class="w-8 h-8 rounded-full bg-white/30 backdrop-blur-sm border border-white/20"></div>
         </div>
     </div>
 </div>
