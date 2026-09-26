@@ -189,12 +189,12 @@ class MovimientoResource extends Resource
                     ->description(fn ($record): string => $record->cuenta?->nombre ?? '')
                     ->searchable()
                     ->sortable(),
+                Tables\Columns\TextColumn::make('monto')
+                    ->money('MXN')
+                    ->sortable(),
                 Tables\Columns\TextColumn::make('categoria.nombre')
                     ->label('Categoria')
                     ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('monto')
-                    ->money('MXN')
                     ->sortable(),
                // Tables\Columns\ImageColumn::make('foto')
                  //   ->searchable()
@@ -222,6 +222,11 @@ class MovimientoResource extends Resource
                  ])
                  ->placeholder('Filtrar por tipo')
                  ->label('Tipo'),
+                 SelectFilter::make('cuenta_id')
+                    ->relationship('cuenta', 'nombre', fn (Builder $query) => $query->where('user_id', auth()->id()))
+                    ->label('Cuenta')
+                    ->searchable()
+                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()

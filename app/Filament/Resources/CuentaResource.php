@@ -5,11 +5,14 @@ namespace App\Filament\Resources;
 use App\Filament\Resources\CuentaResource\Pages;
 use App\Filament\Resources\CuentaResource\RelationManagers;
 use App\Models\Cuenta;
+use App\Filament\Resources\MovimientoResource;
 use Filament\Forms;
 use Filament\Forms\Form;
 use Filament\Resources\Resource;
 use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Infolists;
+use Filament\Infolists\Infolist;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 
@@ -63,6 +66,9 @@ class CuentaResource extends Resource
                 'md' => 2,
                 'xl' => 3,
             ])
+            ->recordUrl(
+                fn (Cuenta $record): string => Pages\ViewCuenta::getUrl(['record' => $record])
+            )
             ->columns([
                 Tables\Columns\Layout\View::make('filament.tables.columns.cuenta-card'),
             ])
@@ -79,6 +85,17 @@ class CuentaResource extends Resource
             ]);
     }
 
+    public static function infolist(Infolist $infolist): Infolist
+    {
+        return $infolist
+            ->schema([
+                Infolists\Components\ViewEntry::make('card')
+                    ->label('')
+                    ->view('filament.tables.columns.cuenta-card')
+                    ->columnSpanFull(),
+            ]);
+    }
+
     public static function getEloquentQuery(): Builder
     {
         return parent::getEloquentQuery()->where('user_id', auth()->id());
@@ -87,7 +104,7 @@ class CuentaResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            RelationManagers\MovimientosRelationManager::class,
         ];
     }
 
@@ -96,6 +113,7 @@ class CuentaResource extends Resource
         return [
             'index' => Pages\ListCuentas::route('/'),
             'create' => Pages\CreateCuenta::route('/create'),
+            'view' => Pages\ViewCuenta::route('/{record}'),
             'edit' => Pages\EditCuenta::route('/{record}/edit'),
         ];
     }
