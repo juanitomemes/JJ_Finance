@@ -171,17 +171,6 @@ class MovimientoResource extends Resource
                     ->sortable()
                     ->label('#')
                     ->rowIndex(),
-                Tables\Columns\TextColumn::make('user.name')
-                    ->label('Usuario')
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('categoria.nombre')
-                    ->label('Categoria')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('cuenta.nombre')
-                    ->label('Cuenta')
-                    ->searchable()
-                    ->sortable(),
                 Tables\Columns\TextColumn::make('tipo')
                     ->label('Tipo de movimiento')
                     ->badge()
@@ -197,6 +186,14 @@ class MovimientoResource extends Resource
                         'ahorro' => 'heroicon-m-banknotes',
                         'transferencia' => 'heroicon-m-arrows-right-left',
                     })
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('categoria.nombre')
+                    ->label('Categoria')
+                    ->searchable()
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('cuenta.nombre')
+                    ->label('Cuenta')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('monto')
