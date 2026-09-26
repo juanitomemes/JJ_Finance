@@ -186,14 +186,11 @@ class MovimientoResource extends Resource
                         'ahorro' => 'heroicon-m-banknotes',
                         'transferencia' => 'heroicon-m-arrows-right-left',
                     })
+                    ->description(fn ($record): string => $record->cuenta?->nombre ?? '')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('categoria.nombre')
                     ->label('Categoria')
-                    ->searchable()
-                    ->sortable(),
-                Tables\Columns\TextColumn::make('cuenta.nombre')
-                    ->label('Cuenta')
                     ->searchable()
                     ->sortable(),
                 Tables\Columns\TextColumn::make('monto')
