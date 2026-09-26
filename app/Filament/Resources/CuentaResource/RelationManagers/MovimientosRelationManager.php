@@ -23,6 +23,7 @@ class MovimientosRelationManager extends RelationManager
     {
         return $table
             ->recordTitleAttribute('id')
+            ->defaultSort('created_at', 'desc')
             ->columns([
                 Tables\Columns\TextColumn::make('id')
                     ->sortable()

@@ -222,11 +222,6 @@ class MovimientoResource extends Resource
                  ])
                  ->placeholder('Filtrar por tipo')
                  ->label('Tipo'),
-                 SelectFilter::make('cuenta_id')
-                    ->relationship('cuenta', 'nombre', fn (Builder $query) => $query->where('user_id', auth()->id()))
-                    ->label('Cuenta')
-                    ->searchable()
-                    ->preload(),
             ])
             ->actions([
                 Tables\Actions\EditAction::make()
