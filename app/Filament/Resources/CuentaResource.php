@@ -58,13 +58,13 @@ class CuentaResource extends Resource
                             ->minValue(1)
                             ->maxValue(31),
                         Forms\Components\TextInput::make('saldo_inicial')
-                            ->label('Saldo Inicial')
+                            ->label(fn (callable $get) => $get('tipo') === 'credito' ? 'Deuda Inicial (Lo que ya debes)' : 'Saldo Inicial')
                             ->required()
                             ->numeric()
                             ->prefix('$')
                             ->default(0.00),
                         Forms\Components\TextInput::make('saldo_actual')
-                            ->label('Saldo Actual')
+                            ->label(fn (callable $get) => $get('tipo') === 'credito' ? 'Deuda Actual' : 'Saldo Actual')
                             ->disabled()
                             ->numeric()
                             ->prefix('$')

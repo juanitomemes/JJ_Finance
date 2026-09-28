@@ -13,6 +13,11 @@ class CreateCuenta extends CreateRecord
     protected function mutateFormDataBeforeCreate(array $data): array
     {
         $data['user_id'] = auth()->id();
+        
+        if (isset($data['tipo']) && $data['tipo'] === 'credito' && isset($data['saldo_inicial'])) {
+            $data['saldo_inicial'] = -abs((float) $data['saldo_inicial']);
+        }
+        
         return $data;
     }
 }
