@@ -39,8 +39,16 @@ class StatsOverview extends BaseWidget
 
         $balance = $ingresos - $gastos;
 
-        $capitalTotal = Cuenta::where('user_id', auth()->id())->sum('saldo_actual');
+        $capitalLiquido = Cuenta::where('user_id', auth()->id())
+            ->where('tipo', '!=', 'credito')
+            ->sum('saldo_actual');
+
+        $deudaTotal = abs(Cuenta::where('user_id', auth()->id())
+            ->where('tipo', 'credito')
+            ->sum('saldo_actual'));
+
         $totalAhorrado = MetaAhorro::where('user_id', auth()->id())->sum('monto_actual');
+        $patrimonioNeto = $capitalLiquido - $deudaTotal + $totalAhorrado;
 
         $mesesEspanol = [
             'January' => 'Enero', 'February' => 'Febrero', 'March' => 'Marzo',
@@ -66,10 +74,20 @@ class StatsOverview extends BaseWidget
                 ->descriptionIcon('heroicon-m-banknotes')
                 ->color($balance >= 0 ? 'success' : 'danger'),
 
-            Stat::make('Capital Total', '$' . number_format($capitalTotal, 2))
-                ->description('Balance en todas tus cuentas')
+            Stat::make('Capital Líquido', '$' . number_format($capitalLiquido, 2))
+                ->description('Efectivo y Débito')
                 ->descriptionIcon('heroicon-m-wallet')
                 ->color('primary'),
+
+            Stat::make('Deuda Tarjetas', '$' . number_format($deudaTotal, 2))
+                ->description('Saldo a pagar en TDC')
+                ->descriptionIcon('heroicon-m-credit-card')
+                ->color('danger'),
+
+            Stat::make('Patrimonio Neto', '$' . number_format($patrimonioNeto, 2))
+                ->description('Capital + Ahorro - Deudas')
+                ->descriptionIcon('heroicon-m-scale')
+                ->color($patrimonioNeto >= 0 ? 'success' : 'danger'),
 
             Stat::make('Ahorro Total', '$' . number_format($totalAhorrado, 2))
                 ->description('Fondos guardados en tus metas')

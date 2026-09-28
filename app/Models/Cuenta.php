@@ -12,6 +12,8 @@ class Cuenta extends Model
         'tipo',
         'saldo_inicial',
         'saldo_actual',
+        'limite_credito',
+        'dia_corte',
     ];
 
     public function user()

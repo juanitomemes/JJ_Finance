@@ -45,12 +45,45 @@
 
     <!-- Cuerpo: Saldo -->
     <div class="mt-6 relative z-10">
-        <span class="!text-white text-xs font-medium opacity-80 uppercase tracking-wider block mb-1">Saldo Actual</span>
-        <div class="!text-white text-3xl font-extrabold tracking-tight drop-shadow-lg flex items-baseline">
-            <span class="!text-white text-lg mr-1 opacity-90">$</span>
-            {{ number_format($record->saldo_actual, 2) }}
-            <span class="!text-white text-sm ml-1 opacity-90 font-medium">MXN</span>
-        </div>
+        @if($record->tipo === 'credito')
+            <div class="flex justify-between items-end mb-2">
+                <div>
+                    <span class="!text-white text-[10px] font-medium opacity-80 uppercase tracking-wider block mb-0.5">Deuda Actual</span>
+                    <div class="!text-white text-2xl font-extrabold tracking-tight drop-shadow-lg flex items-baseline">
+                        <span class="!text-white text-base mr-1 opacity-90">$</span>
+                        {{ number_format(abs($record->saldo_actual), 2) }}
+                    </div>
+                </div>
+                <div class="text-right">
+                    <span class="!text-white text-[10px] font-medium opacity-80 uppercase tracking-wider block mb-0.5">Disponible</span>
+                    <div class="!text-green-300 text-sm font-bold tracking-tight drop-shadow-md flex items-baseline justify-end">
+                        <span class="text-xs mr-0.5">$</span>
+                        {{ number_format(($record->limite_credito ?? 0) + $record->saldo_actual, 2) }}
+                    </div>
+                </div>
+            </div>
+            <div class="w-full bg-white/20 rounded-full h-1.5 mb-1 mt-2">
+                @php
+                    $limite = $record->limite_credito > 0 ? $record->limite_credito : 1;
+                    $deuda = abs($record->saldo_actual);
+                    $porcentaje = min(($deuda / $limite) * 100, 100);
+                @endphp
+                <div class="bg-red-400 h-1.5 rounded-full" style="width: {{ $porcentaje }}%"></div>
+            </div>
+            <div class="flex justify-between text-[9px] text-white/80 uppercase font-medium mt-1">
+                <span>Límite: ${{ number_format($record->limite_credito ?? 0, 2) }}</span>
+                @if($record->dia_corte)
+                <span>Corte: Día {{ $record->dia_corte }}</span>
+                @endif
+            </div>
+        @else
+            <span class="!text-white text-xs font-medium opacity-80 uppercase tracking-wider block mb-1">Saldo Actual</span>
+            <div class="!text-white text-3xl font-extrabold tracking-tight drop-shadow-lg flex items-baseline">
+                <span class="!text-white text-lg mr-1 opacity-90">$</span>
+                {{ number_format($record->saldo_actual, 2) }}
+                <span class="!text-white text-sm ml-1 opacity-90 font-medium">MXN</span>
+            </div>
+        @endif
     </div>
 
     <!-- Pie: Nombre de la cuenta y logos -->

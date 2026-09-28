@@ -36,12 +36,27 @@ class CuentaResource extends Resource
                             ->placeholder('Ej. Tarjeta BBVA, Efectivo...'),
                         Forms\Components\Select::make('tipo')
                             ->required()
+                            ->reactive()
                             ->options([
                                 'efectivo' => 'Efectivo',
                                 'debito' => 'Tarjeta de Débito',
                                 'credito' => 'Tarjeta de Crédito',
                                 'ahorro' => 'Cuenta de Ahorro',
                             ]),
+                        Forms\Components\TextInput::make('limite_credito')
+                            ->label('Límite de Crédito')
+                            ->required(fn (callable $get) => $get('tipo') === 'credito')
+                            ->visible(fn (callable $get) => $get('tipo') === 'credito')
+                            ->numeric()
+                            ->prefix('$')
+                            ->default(0.00),
+                        Forms\Components\TextInput::make('dia_corte')
+                            ->label('Día de Corte')
+                            ->required(fn (callable $get) => $get('tipo') === 'credito')
+                            ->visible(fn (callable $get) => $get('tipo') === 'credito')
+                            ->numeric()
+                            ->minValue(1)
+                            ->maxValue(31),
                         Forms\Components\TextInput::make('saldo_inicial')
                             ->label('Saldo Inicial')
                             ->required()

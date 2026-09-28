@@ -23,7 +23,7 @@ class MovimientoObserver
 
     private function asegurarCategoria(Movimiento $movimiento): void
     {
-        if (in_array($movimiento->tipo, ['ahorro', 'transferencia']) && empty($movimiento->categoria_id)) {
+        if (in_array($movimiento->tipo, ['ahorro', 'transferencia', 'pago_tarjeta']) && empty($movimiento->categoria_id)) {
             $nombre = ucfirst($movimiento->tipo);
             $categoria = \App\Models\Categoria::firstOrCreate(
                 ['nombre' => $nombre, 'user_id' => $movimiento->user_id ?? auth()->id()],
@@ -91,15 +91,15 @@ class MovimientoObserver
             if ($cuenta) {
                 if ($tipo === 'ingreso') {
                     $cuenta->saldo_actual += $valorEfectivo;
-                } elseif (in_array($tipo, ['gasto', 'ahorro', 'transferencia'])) {
+                } elseif (in_array($tipo, ['gasto', 'ahorro', 'transferencia', 'pago_tarjeta'])) {
                     $cuenta->saldo_actual -= $valorEfectivo;
                 }
                 $cuenta->saveQuietly();
             }
         }
 
-        // 1.1 Afectar Cuenta Destino (Solo transferencias)
-        if ($tipo === 'transferencia' && $cuenta_destino_id) {
+        // 1.1 Afectar Cuenta Destino (Solo transferencias y pagos)
+        if (in_array($tipo, ['transferencia', 'pago_tarjeta']) && $cuenta_destino_id) {
             $cuentaDestino = Cuenta::find($cuenta_destino_id);
             if ($cuentaDestino) {
                 $cuentaDestino->saldo_actual += $valorEfectivo;

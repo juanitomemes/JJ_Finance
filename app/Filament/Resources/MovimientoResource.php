@@ -41,6 +41,7 @@ class MovimientoResource extends Resource
                         'gasto' => 'Gasto',
                         'ahorro' => 'Ahorro a Meta',
                         'transferencia' => 'Transferencia',
+                        'pago_tarjeta' => 'Pago de Tarjeta de Crédito',
                     ])
                     ->reactive()
                     ->afterStateUpdated(function (callable $set, $state) {
@@ -58,11 +59,17 @@ class MovimientoResource extends Resource
                                 ['tipo' => 'gasto']
                             );
                             $set('categoria_id', $categoria->id);
+                        } elseif ($state === 'pago_tarjeta') {
+                            $categoria = \App\Models\Categoria::firstOrCreate(
+                                ['nombre' => 'Pago de Tarjeta', 'user_id' => auth()->id()],
+                                ['tipo' => 'gasto']
+                            );
+                            $set('categoria_id', $categoria->id);
                         }
                     }),
                 Forms\Components\Select::make('categoria_id')
                     ->label('Categoría')
-                    ->required(fn (callable $get) => !in_array($get('tipo'), ['ahorro', 'transferencia']))
+                    ->required(fn (callable $get) => !in_array($get('tipo'), ['ahorro', 'transferencia', 'pago_tarjeta']))
                     ->dehydrated()
                     ->relationship(
                         name: 'categoria',
@@ -74,7 +81,7 @@ class MovimientoResource extends Resource
                                 return $query->whereRaw('1 = 0');
                             }
 
-                            $tipoCategoria = in_array($tipoMovimiento, ['ahorro', 'transferencia']) ? 'gasto' : $tipoMovimiento;
+                            $tipoCategoria = in_array($tipoMovimiento, ['ahorro', 'transferencia', 'pago_tarjeta']) ? 'gasto' : $tipoMovimiento;
 
                             return $query
                                 ->where('tipo', $tipoCategoria)
@@ -84,9 +91,9 @@ class MovimientoResource extends Resource
                                 });
                         }
                     )
-                    ->disabled(fn (callable $get) => empty($get('tipo')) || in_array($get('tipo'), ['ahorro', 'transferencia'])),
+                    ->disabled(fn (callable $get) => empty($get('tipo')) || in_array($get('tipo'), ['ahorro', 'transferencia', 'pago_tarjeta'])),
                 Forms\Components\Select::make('cuenta_id')
-                    ->label(fn (callable $get) => $get('tipo') === 'transferencia' ? 'Cuenta Origen' : 'Cuenta / Monedero')
+                    ->label(fn (callable $get) => in_array($get('tipo'), ['transferencia', 'pago_tarjeta']) ? 'Cuenta Origen' : 'Cuenta / Monedero')
                     ->required()
                     ->relationship(
                         name: 'cuenta',
@@ -94,17 +101,23 @@ class MovimientoResource extends Resource
                         modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id())
                     ),
                 Forms\Components\Select::make('cuenta_destino_id')
-                    ->label('Cuenta Destino')
+                    ->label(fn (callable $get) => $get('tipo') === 'pago_tarjeta' ? 'Tarjeta a Pagar' : 'Cuenta Destino')
                     ->relationship(
                         name: 'cuentaDestino',
                         titleAttribute: 'nombre',
-                        modifyQueryUsing: fn (Builder $query) => $query->where('user_id', auth()->id())
+                        modifyQueryUsing: function (Builder $query, callable $get) {
+                            $q = $query->where('user_id', auth()->id());
+                            if ($get('tipo') === 'pago_tarjeta') {
+                                $q->where('tipo', 'credito');
+                            }
+                            return $q;
+                        }
                     )
-                    ->visible(fn (callable $get) => $get('tipo') === 'transferencia')
-                    ->required(fn (callable $get) => $get('tipo') === 'transferencia')
+                    ->visible(fn (callable $get) => in_array($get('tipo'), ['transferencia', 'pago_tarjeta']))
+                    ->required(fn (callable $get) => in_array($get('tipo'), ['transferencia', 'pago_tarjeta']))
                     ->rules([
                         fn (Forms\Get $get): \Closure => function (string $attribute, $value, \Closure $fail) use ($get) {
-                            if ($get('tipo') === 'transferencia' && $value == $get('cuenta_id')) {
+                            if (in_array($get('tipo'), ['transferencia', 'pago_tarjeta']) && $value == $get('cuenta_id')) {
                                 $fail("La cuenta destino no puede ser la misma que la de origen.");
                             }
                         },
@@ -179,12 +192,14 @@ class MovimientoResource extends Resource
                         'gasto' => 'danger',
                         'ahorro' => 'info',
                         'transferencia' => 'warning',
+                        'pago_tarjeta' => 'success',
                     })
                     ->icon(fn (string $state): string => match ($state) {
                         'ingreso' => 'heroicon-m-arrow-trending-up',
                         'gasto' => 'heroicon-m-arrow-trending-down',
                         'ahorro' => 'heroicon-m-banknotes',
                         'transferencia' => 'heroicon-m-arrows-right-left',
+                        'pago_tarjeta' => 'heroicon-m-credit-card',
                     })
                     ->description(fn ($record): string => $record->cuenta?->nombre ?? '')
                     ->searchable()
